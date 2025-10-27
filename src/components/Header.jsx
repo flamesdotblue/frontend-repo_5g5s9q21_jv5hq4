@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Search, ShoppingCart, MapPin, Menu, ChevronDown, X } from "lucide-react";
+import { motion } from "framer-motion";
 
 function LoginModal({ open, onClose, onLogin }) {
   const [email, setEmail] = useState("");
@@ -44,6 +45,17 @@ function LoginModal({ open, onClose, onLogin }) {
   );
 }
 
+const inrFormatter = new Intl.NumberFormat("en-IN", {
+  style: "currency",
+  currency: "INR",
+  maximumFractionDigits: 0,
+});
+
+function usdToInr(amount) {
+  const rate = 83; // approximate conversion
+  return Math.round(amount * rate);
+}
+
 function CartDrawer({ open, onClose, items, onRemove }) {
   return (
     <div className={`fixed inset-0 z-40 ${open ? "" : "pointer-events-none"}`}>
@@ -51,10 +63,11 @@ function CartDrawer({ open, onClose, items, onRemove }) {
         onClick={onClose}
         className={`absolute inset-0 bg-black/50 transition-opacity ${open ? "opacity-100" : "opacity-0"}`}
       />
-      <div
-        className={`absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-xl transition-transform ${
-          open ? "translate-x-0" : "translate-x-full"
-        }`}
+      <motion.div
+        initial={{ x: "100%" }}
+        animate={{ x: open ? 0 : "100%" }}
+        transition={{ type: "spring", stiffness: 260, damping: 28 }}
+        className={`absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-xl`}
       >
         <div className="flex items-center justify-between border-b p-4">
           <h3 className="text-lg font-semibold">Your Cart ({items.length})</h3>
@@ -74,7 +87,7 @@ function CartDrawer({ open, onClose, items, onRemove }) {
                       <img src={item.image} alt={item.name} className="h-14 w-14 rounded object-cover" />
                       <div>
                         <p className="text-sm font-medium">{item.name}</p>
-                        <p className="text-sm text-amber-700">${item.price.toFixed(2)}</p>
+                        <p className="text-sm text-amber-700">{inrFormatter.format(usdToInr(item.price))}</p>
                       </div>
                     </div>
                     <button
@@ -97,7 +110,7 @@ function CartDrawer({ open, onClose, items, onRemove }) {
             </button>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
@@ -108,7 +121,12 @@ export default function Header({ user, onLogin, onLogout, cartItems, search, set
 
   return (
     <header className="sticky top-0 z-30 w-full">
-      <div className="flex items-center gap-3 bg-neutral-900 px-4 py-2 text-white md:gap-4 md:px-6">
+      <motion.div
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4 }}
+        className="flex items-center gap-3 bg-neutral-900 px-4 py-2 text-white md:gap-4 md:px-6"
+      >
         <button className="flex items-center gap-2 text-left">
           <Menu className="h-6 w-6 md:hidden" />
           <div className="font-semibold">DryFruit Hub</div>
@@ -146,12 +164,17 @@ export default function Header({ user, onLogin, onLogout, cartItems, search, set
           <ShoppingCart className="h-6 w-6" />
           <span className="hidden text-sm font-semibold md:block">Cart</span>
           {cartItems.length > 0 && (
-            <span className="absolute -right-2 -top-2 rounded-full bg-amber-500 px-1.5 text-xs font-bold text-black">
+            <motion.span
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 300, damping: 18 }}
+              className="absolute -right-2 -top-2 rounded-full bg-amber-500 px-1.5 text-xs font-bold text-black"
+            >
               {cartItems.length}
-            </span>
+            </motion.span>
           )}
         </button>
-      </div>
+      </motion.div>
       <div className="flex items-center gap-4 bg-neutral-800 px-4 py-2 text-sm text-neutral-100 md:px-6">
         <span className="flex items-center gap-2"><Menu className="h-5 w-5" /> All</span>
         <span className="hidden md:block">Best Sellers</span>

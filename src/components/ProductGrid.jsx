@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { Star, Shield, Truck, Check } from "lucide-react";
+import { motion } from "framer-motion";
 
 const PRODUCTS = [
   {
@@ -64,6 +65,17 @@ const PRODUCTS = [
   },
 ];
 
+const inrFormatter = new Intl.NumberFormat("en-IN", {
+  style: "currency",
+  currency: "INR",
+  maximumFractionDigits: 0,
+});
+
+function usdToInr(amount) {
+  const rate = 83; // approximate conversion
+  return Math.round(amount * rate);
+}
+
 export default function ProductGrid({ search, category, onAddToCart }) {
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -81,32 +93,52 @@ export default function ProductGrid({ search, category, onAddToCart }) {
   return (
     <section className="mx-auto max-w-7xl px-4 py-6 md:px-6">
       {/* Deals banner */}
-      <div className="mb-6 rounded-lg bg-gradient-to-r from-amber-100 via-amber-50 to-white p-4 ring-1 ring-amber-200">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.4 }}
+        transition={{ duration: 0.5 }}
+        className="mb-6 rounded-lg bg-gradient-to-r from-amber-100 via-amber-50 to-white p-4 ring-1 ring-amber-200"
+      >
         <p className="text-sm font-medium text-amber-900">
-          Festive Deals: Up to 30% off on gift hampers + free shipping above $20
+          Festive Deals: Up to 30% off on gift hampers + free shipping above ₹1,499
         </p>
-      </div>
+      </motion.div>
 
       {/* Quality badges */}
       <div className="mb-6 grid grid-cols-1 gap-3 md:grid-cols-3">
-        <div className="flex items-center gap-3 rounded-lg border p-3">
-          <Shield className="h-5 w-5 text-amber-600" />
-          <p className="text-sm"><span className="font-semibold">Premium Quality</span> ingredients, lab-tested</p>
-        </div>
-        <div className="flex items-center gap-3 rounded-lg border p-3">
-          <Truck className="h-5 w-5 text-amber-600" />
-          <p className="text-sm"><span className="font-semibold">Fast Delivery</span> nationwide</p>
-        </div>
-        <div className="flex items-center gap-3 rounded-lg border p-3">
-          <Check className="h-5 w-5 text-amber-600" />
-          <p className="text-sm"><span className="font-semibold">No Preservatives</span> or artificial colors</p>
-        </div>
+        {[
+          { icon: Shield, title: "Premium Quality", desc: "ingredients, lab-tested" },
+          { icon: Truck, title: "Fast Delivery", desc: "nationwide" },
+          { icon: Check, title: "No Preservatives", desc: "or artificial colors" },
+        ].map((b, i) => (
+          <motion.div
+            key={b.title}
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.45, delay: i * 0.08 }}
+            className="flex items-center gap-3 rounded-lg border p-3 bg-white"
+          >
+            <b.icon className="h-5 w-5 text-amber-600" />
+            <p className="text-sm">
+              <span className="font-semibold">{b.title}</span> {b.desc}
+            </p>
+          </motion.div>
+        ))}
       </div>
 
       {/* Grid */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((p) => (
-          <article key={p.id} className="group flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-lg">
+        {filtered.map((p, idx) => (
+          <motion.article
+            key={p.id}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.5, delay: (idx % 6) * 0.06 }}
+            className="group flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-lg"
+          >
             <div className="relative">
               <img src={p.image} alt={p.name} className="h-56 w-full object-cover" />
               <div className="absolute left-3 top-3 rounded bg-white/90 px-2 py-1 text-xs font-medium text-amber-700 shadow">
@@ -121,7 +153,7 @@ export default function ProductGrid({ search, category, onAddToCart }) {
                 ))}
                 <span className="ml-2 text-xs text-neutral-600">{p.rating.toFixed(1)}</span>
               </div>
-              <div className="text-lg font-bold text-neutral-900">${p.price.toFixed(2)}</div>
+              <div className="text-lg font-bold text-neutral-900">{inrFormatter.format(usdToInr(p.price))}</div>
               <ul className="mt-1 space-y-1 text-xs text-neutral-600">
                 {p.features.map((f, idx) => (
                   <li key={idx} className="flex items-center gap-2">
@@ -138,7 +170,7 @@ export default function ProductGrid({ search, category, onAddToCart }) {
                 </button>
               </div>
             </div>
-          </article>
+          </motion.article>
         ))}
       </div>
 
