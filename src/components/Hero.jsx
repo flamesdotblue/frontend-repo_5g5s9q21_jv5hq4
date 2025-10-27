@@ -50,10 +50,10 @@ export default function Hero() {
                 Shop Bestsellers
               </a>
               <a
-                href="#about"
+                href="#contact"
                 className="inline-flex items-center justify-center rounded-full border border-neutral-300 bg-white hover:bg-neutral-50 text-neutral-800 px-6 py-3 text-sm font-medium shadow-sm transition"
               >
-                Our Craft
+                Contact Us
               </a>
             </motion.div>
           </div>
